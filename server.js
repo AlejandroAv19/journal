@@ -18,21 +18,24 @@ mongoose.connect(CONNECTION_URL)
         console.error('Error connecting to MongoDB:', error.message);
     });
 
-// schema
+/* A schema defines the structure and rules for storing documents in the collection.
+    Think of it as a "blueprint" for the data.
+    Each document in the collection must conform to this schema. */
 const journalSchema = new mongoose.Schema({
     user: String,
     text: String,
     date: { type: Date, default: Date.now },
 });
 
-// model
-const entries = mongoose.model('entries', journalSchema);
+/* A model is a representation of the MongoDB collection and provides methods to interact with it (e.g., queries, inserting documents)
+    Models are how you interact with collections in MongoDB—they abstract away the raw database operations with an easier-to-use JavaScript API */
+const entriesModel = mongoose.model('entries', journalSchema);
 
 app.get('/entries', async (req, res) => {
     try {
-        const entries = await entries.find();
-        console.log('Retrieved entries:', entries);
-        res.json(entries); // Send entries to the client
+        const data = await entriesModel.find();
+        console.log('Retrieved entries:', data);
+        res.json(data);
     } catch (error) {
         console.error('Failed to fetch entries:', error.message);
         res.status(500).json({ error: 'Failed to fetch entries' });
