@@ -22,6 +22,11 @@ async function fetchEntries() {
             const content = document.createElement('p');
             content.textContent = entry.text;
 
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = () => deleteEntry(entry._id);
+
+            article.appendChild(deleteButton);
             article.appendChild(heading);
             article.appendChild(content);
 
@@ -76,5 +81,27 @@ entryForm.addEventListener("submit", async (event) => {
         alert("Unable to publish your entry at the moment. Please try again later.");
     }
 })
+
+async function deleteEntry(id) {
+    const shouldDelete = confirm("Are you sure you want to delete this entry?");
+    if (!shouldDelete) return;
+
+    try {
+        const response = await fetch(`/entries/${id}`, {
+            method: "DELETE",
+        });
+
+        if (response.ok) {
+            console.log("Entry successfully deleted.");
+            await fetchEntries();
+        } else {
+            console.error("Failed to delete entry.");
+            alert("Unable to delete the entry. Please try again later.");
+        }
+    } catch (error) {
+        console.error("Error deleting entry:", error);
+        alert("Unable to delete the entry. Please try again later.");
+    }
+}
 
 fetchEntries();
