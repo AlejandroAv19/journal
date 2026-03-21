@@ -35,7 +35,7 @@ app.get('/entries', async (req, res) => {
     try {
         // Searching entries from DB
         const data = await entriesModel.find();
-        
+
         // Sending entries back to browser
         res.json(data);
     } catch (error) {
@@ -62,6 +62,19 @@ app.post('/entries', async (req, res) => {
     } catch (error) {
         console.error("Error saving the entry:", error.message);
         res.status(500).json({ error: "Failed to save entry." });
+    }
+});
+
+app.delete('/entries/:id', async (req, res) => {
+    try {
+        const deletedEntry = await entriesModel.findByIdAndDelete(req.params.id);
+        if (!deletedEntry) {
+            return res.status(404).json({ error: "Entry not found!" });
+        }
+        res.json({ success: true, message: "Entry deleted!", entry: deletedEntry });
+    } catch (error) {
+        console.error("Failed to delete entry:", error.message);
+        res.status(500).json({ error: "Failed to delete entry." });
     }
 });
 
