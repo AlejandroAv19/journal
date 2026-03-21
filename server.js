@@ -33,12 +33,35 @@ const entriesModel = mongoose.model('entries', journalSchema);
 
 app.get('/entries', async (req, res) => {
     try {
+        // Searching entries from DB
         const data = await entriesModel.find();
-        console.log('Retrieved entries:', data);
+        
+        // Sending entries back to browser
         res.json(data);
     } catch (error) {
         console.error('Failed to fetch entries:', error.message);
         res.status(500).json({ error: 'Failed to fetch entries' });
+    }
+});
+
+app.post('/entries', async (req, res) => {
+    // Getting data from request body
+    const { user, text } = req.body; 
+
+    try {
+        // Saving entry to DB
+        const newEntry = new entriesModel({ user, text }); 
+        const savedEntry = await newEntry.save();
+
+        // Sending response back to browser
+        res.status(201).json({
+            success: true,
+            message: "Entry created successfully!",
+            entry: savedEntry,
+        });
+    } catch (error) {
+        console.error("Error saving the entry:", error.message);
+        res.status(500).json({ error: "Failed to save entry." });
     }
 });
 
