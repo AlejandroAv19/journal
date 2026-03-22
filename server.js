@@ -78,6 +78,25 @@ app.delete('/entries/:id', async (req, res) => {
     }
 });
 
+app.put('/entries/:id', async (req, res) => {
+    try{
+        const updatedEntry = await entriesModel.findOneAndUpdate(
+            { _id: req.params.id }, // Find by ID
+            { text: req.body.text }, // Update the text field with the new value
+            { returnDocument: 'after' }            // Return the updated document
+        );
+
+        if (!updatedEntry) {
+            return res.status(404).json({ error: "Entry not found!" });
+        }
+
+        res.json({ success: true, message: "Entry updated!", entry: updatedEntry });
+    }catch (error) {
+        console.error("Failed to update entry:", error.message);
+        res.status(500).json({ error: "Failed to update entry." });
+    }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log("Listening on port " + PORT);
